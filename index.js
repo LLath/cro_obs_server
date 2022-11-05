@@ -1,7 +1,12 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-const httpServer = createServer();
+const httpServer = createServer((req, res) => {
+  if (req.url === "/") {
+    res.write("This is a test");
+    res.end;
+  }
+});
 const io = new Server(httpServer, {
   cors: {
     origin: [
@@ -19,6 +24,10 @@ io.on("connection", (socket) => {
   socket.on("update:saved", (data) => {
     console.log("update received", data);
     io.sockets.emit("update:overlay", data);
+  });
+  socket.on("page:change", (value) => {
+    console.log("page:change received", value);
+    io.sockets.emit("page:change:trigger", value);
   });
 });
 
